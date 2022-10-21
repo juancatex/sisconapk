@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "515366250215",
+    "firebase_url": "https://prueba-a8c17.firebaseio.com",
+    "project_id": "prueba-a8c17",
+    "storage_bucket": "prueba-a8c17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515366250215:android:8fdf17631a0d584e486442",
+        "android_client_info": {
+          "package_name": "com.example.siscon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515366250215-3jj910fqpu2r2v95m6t1v7ffl0nd0sip.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmeLSIjzkWAA6RJjRQChSViZTnkwAmr34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515366250215-3jj910fqpu2r2v95m6t1v7ffl0nd0sip.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
