@@ -1,6 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class LoginPrincipal extends StatefulWidget {
   const LoginPrincipal({super.key});
@@ -13,29 +16,35 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
   final keyformulario = GlobalKey<FormState>();
   final correocontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
+  final RoundedLoadingButtonController _btnController1 =
+      RoundedLoadingButtonController();
+  bool editarfields = true;
+
   Future loginfirebase() async {
-    print(correocontroller.text);
-    print(passwordcontroller.text);
     try {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator());
-        },
-      );
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: correocontroller.text, password: passwordcontroller.text);
+      return {'validate': true};
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
-    } catch (e) {
-      print(e);
+      return {'validate': false, 'code': e.code};
     }
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
+  }
+
+  void mostrarmensaje(String code) {
+    String mensagein = '';
+    if (code == 'user-not-found') {
+      mensagein = 'El correo electronico ingresado no se encuentra registrado.';
+    } else if (code == 'wrong-password') {
+      mensagein = 'La contrasña es incorrecta.';
+    }
+    ElegantNotification.error(
+      showProgressIndicator: true,
+      notificationPosition: NotificationPosition.bottomCenter,
+      animation: AnimationType.fromBottom,
+      title: const Text('Error'),
+      toastDuration: const Duration(milliseconds: 7000),
+      description: Text(mensagein),
+    ).show(context);
   }
 
   @override
@@ -53,7 +62,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
         child: Form(
           key: keyformulario,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.symmetric(horizontal: 25),
             child: SingleChildScrollView(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +71,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                       Icons.usb,
                       size: 200,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     const Text(
@@ -74,12 +83,13 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                       height: 80,
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: 20, right: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(12)),
                       child: TextFormField(
+                        enabled: editarfields,
                         controller: correocontroller,
                         validator: (value) => EmailValidator.validate(value!)
                             ? null
@@ -95,12 +105,13 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                       height: 10,
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: 20, right: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(12)),
                       child: TextFormField(
+                        enabled: editarfields,
                         controller: passwordcontroller,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -116,44 +127,53 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                       ),
                     ),
                     const SizedBox(
-                      height: 40,
+                      height: 20,
                     ),
-                    GestureDetector(
-                      onTap: () {
+                    RoundedLoadingButton(
+                      color: Colors.deepPurple,
+                      successColor: Colors.deepPurple,
+                      controller: _btnController1,
+                      onPressed: () {
                         if (keyformulario.currentState!.validate()) {
-                          loginfirebase();
-                        } else {}
+                          setState(() {
+                            editarfields = false;
+                          });
+                          loginfirebase().then(
+                            (value) {
+                              if (!value['validate']) {
+                                setState(() {
+                                  editarfields = true;
+                                });
+                                _btnController1.reset();
+                                mostrarmensaje(value['code']);
+                              }
+                            },
+                          );
+                        } else {
+                          _btnController1.reset();
+                        }
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurple,
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: const Center(
-                          child: Text(
-                            "Ingresar",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
+                      valueColor: Colors.white,
+                      borderRadius: 12,
+                      child: const Text("Ingresar",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 25,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "¿No esta registrado?",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 10),
-                          child: Text(
+                          child: const Text(
                             "Registrate AQUI",
                             style: TextStyle(
                                 color: Colors.blue,
