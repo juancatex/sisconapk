@@ -83,7 +83,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                       height: 80,
                     ),
                     Container(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(color: Colors.grey),
