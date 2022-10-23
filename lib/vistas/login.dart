@@ -174,7 +174,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           child: const Text(
-                            "Registrate AQUI",
+                            "Registrate Aqui",
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
