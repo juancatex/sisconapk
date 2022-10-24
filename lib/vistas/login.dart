@@ -20,6 +20,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
   final RoundedLoadingButtonController _btnController1 =
       RoundedLoadingButtonController();
   bool editarfields = true;
+  bool vistapass = false;
 
   Future loginfirebase() async {
     try {
@@ -61,116 +62,145 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[300],
-      body: Center(
-        child: Form(
-          key: keyformulario,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.usb,
-                      size: 200,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Text(
-                      "Bienvenidos",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 44),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    TextFormField(
-                      enabled: editarfields,
-                      controller: correocontroller,
-                      validator: (value) => EmailValidator.validate(value!)
-                          ? null
-                          : "Debe ingresar un correo electrónico valido.",
-                      decoration:
-                          ThemaField().FieldDecoration("Correo Electrónico"),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      obscureText: true,
-                      enabled: editarfields,
-                      controller: passwordcontroller,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Debe ingresar una contraseña";
-                        }
-                        return null;
-                      },
-                      decoration: ThemaField().FieldDecoration("Contraseña"),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    RoundedLoadingButton(
-                      color: Colors.deepPurple,
-                      successColor: Colors.deepPurple,
-                      controller: _btnController1,
-                      onPressed: () {
-                        if (keyformulario.currentState!.validate()) {
-                          setState(() {
-                            editarfields = false;
-                          });
-                          loginfirebase().then(
-                            (value) {
-                              if (!value['validate']) {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        colors: [
+          Colors.blue.shade900,
+          Color.fromARGB(255, 108, 184, 247),
+          Color.fromARGB(255, 245, 58, 161)
+        ],
+        begin: Alignment.centerRight,
+        end: Alignment.centerLeft,
+      )),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Form(
+            key: keyformulario,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white60,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.all(25),
+                              child:
+                                  Image.asset("assets/logo.png", width: 180)),
+                          const Text(
+                            "ASCINALSS",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 44),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          TextFormField(
+                            enabled: editarfields,
+                            controller: correocontroller,
+                            validator: (value) => EmailValidator.validate(
+                                    value!)
+                                ? null
+                                : "Debe ingresar un correo electrónico valido.",
+                            decoration: ThemaField()
+                                .FieldDecoration("Correo Electrónico"),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            obscureText: !vistapass,
+                            enabled: editarfields,
+                            controller: passwordcontroller,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Debe ingresar una contraseña";
+                              }
+                              return null;
+                            },
+                            decoration: ThemaField().FieldPassDecoration(
+                                "Contraseña",
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      vistapass = !vistapass;
+                                    });
+                                  },
+                                  icon: Icon(vistapass
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                )),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          RoundedLoadingButton(
+                            color: Color.fromARGB(255, 44, 70, 212),
+                            successColor: Color.fromARGB(255, 44, 70, 212),
+                            controller: _btnController1,
+                            onPressed: () {
+                              if (keyformulario.currentState!.validate()) {
                                 setState(() {
-                                  editarfields = true;
+                                  editarfields = false;
                                 });
+                                loginfirebase().then(
+                                  (value) {
+                                    if (!value['validate']) {
+                                      setState(() {
+                                        editarfields = true;
+                                      });
+                                      _btnController1.reset();
+                                      mostrarmensaje(value['code']);
+                                    }
+                                  },
+                                );
+                              } else {
                                 _btnController1.reset();
-                                mostrarmensaje(value['code']);
                               }
                             },
-                          );
-                        } else {
-                          _btnController1.reset();
-                        }
-                      },
-                      valueColor: Colors.white,
-                      borderRadius: 12,
-                      child: const Text("Ingresar",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "¿No esta registrado?",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        GestureDetector(
-                          onTap: editarfields ? registroUser : null,
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: const Text(
-                              "Registrate Aqui",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                            valueColor: Colors.white,
+                            borderRadius: 12,
+                            child: const Text("Ingresar",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                        )
-                      ],
-                    )
-                  ]),
+                          const SizedBox(
+                            height: 35,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "¿No esta registrado?",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              GestureDetector(
+                                onTap: editarfields ? registroUser : null,
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: const Text(
+                                    "Registrate Aqui",
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
