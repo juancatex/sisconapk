@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 import 'package:siscon/clases/decorationField.dart';
 
 class LoginPrincipal extends StatefulWidget {
@@ -92,12 +93,25 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                         children: [
                           Padding(
                               padding: const EdgeInsets.all(25),
-                              child:
-                                  Image.asset("assets/logo.png", width: 180)),
+                              child: SimpleShadow(
+                                child:
+                                    Image.asset('assets/logo.png', width: 200),
+                                opacity: 0.6, // Default: 0.5
+                                color: Colors.black, // Default: Black
+                                offset: Offset(3, 3), // Default: Offset(2, 2)
+                                sigma: 7, // Default: 2
+                              )),
                           const Text(
                             "ASCINALSS",
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 44),
+                                fontWeight: FontWeight.normal,
+                                fontSize: 48,
+                                fontFamily: "Anton",
+                                shadows: [
+                                  Shadow(
+                                      color: Color.fromARGB(255, 95, 117, 243),
+                                      offset: Offset(2.5, 2.5))
+                                ]),
                           ),
                           const SizedBox(
                             height: 30,
