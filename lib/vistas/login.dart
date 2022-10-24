@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:siscon/clases/decorationField.dart';
 
 class LoginPrincipal extends StatefulWidget {
   const LoginPrincipal({super.key});
@@ -47,6 +48,10 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
     ).show(context);
   }
 
+  void registroUser() {
+    print("nuevo registro");
+  }
+
   @override
   void dispose() {
     correocontroller.dispose();
@@ -61,9 +66,9 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
       body: Center(
         child: Form(
           key: keyformulario,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: SingleChildScrollView(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -80,54 +85,34 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 44),
                     ),
                     const SizedBox(
-                      height: 80,
+                      height: 40,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: TextFormField(
-                        enabled: editarfields,
-                        controller: correocontroller,
-                        validator: (value) => EmailValidator.validate(value!)
-                            ? null
-                            : "Debe ingresar un correo electronico valido.",
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Email',
-                            labelStyle: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 19)),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: TextFormField(
-                        enabled: editarfields,
-                        controller: passwordcontroller,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Debe ingresar una contraseña";
-                          }
-                        },
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Contraseña',
-                            labelStyle: TextStyle(
-                                fontSize: 19, fontWeight: FontWeight.w500)),
-                      ),
+                    TextFormField(
+                      enabled: editarfields,
+                      controller: correocontroller,
+                      validator: (value) => EmailValidator.validate(value!)
+                          ? null
+                          : "Debe ingresar un correo electrónico valido.",
+                      decoration:
+                          ThemaField().FieldDecoration("Correo Electrónico"),
                     ),
                     const SizedBox(
                       height: 20,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      enabled: editarfields,
+                      controller: passwordcontroller,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Debe ingresar una contraseña";
+                        }
+                        return null;
+                      },
+                      decoration: ThemaField().FieldDecoration("Contraseña"),
+                    ),
+                    const SizedBox(
+                      height: 30,
                     ),
                     RoundedLoadingButton(
                       color: Colors.deepPurple,
@@ -162,7 +147,7 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                               fontWeight: FontWeight.bold)),
                     ),
                     const SizedBox(
-                      height: 25,
+                      height: 35,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -171,13 +156,16 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                           "¿No esta registrado?",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: const Text(
-                            "Registrate Aqui",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                        GestureDetector(
+                          onTap: editarfields ? registroUser : null,
+                          child: Container(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: const Text(
+                              "Registrate Aqui",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         )
                       ],
