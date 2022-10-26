@@ -163,6 +163,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  hexcolor:
+    dependency: "direct main"
+    description:
+      name: hexcolor
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   http_parser:
     dependency: transitive
     description:
@@ -310,4 +317,4 @@ packages:
     version: "2.1.2"
 sdks:
   dart: ">=2.18.2 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.1"
