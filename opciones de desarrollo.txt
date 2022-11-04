@@ -1,0 +1,23 @@
+para instalar firebase 
+https://firebase.google.com/docs/auth/flutter/start
+
+
+
+
+It's very simple follow below steps.
+
+Step 1. Go to your project directory in VS code.
+
+Step 2. Open terminal.
+
+Step 3. Run cd android for the below path :
+
+Ex.: PS D:\Workspace\FlutterWorkSpace\FlutterApp\flutter_demo_app> cd android
+
+Step 4. Run .\gradlew signingReport for the below path :
+
+PS D:\Workspace\FlutterWorkSpace\FlutterApp\flutter_demo_app\android> .\gradlew signingReport
+
+Then it will display like that
+
+

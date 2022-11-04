@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:siscon/clases/decorationField.dart';
@@ -21,6 +22,8 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
   final passwordcontroller = TextEditingController();
   final RoundedLoadingButtonController _btnController1 =
       RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btngoogle =
+      RoundedLoadingButtonController();
   bool editarfields = true;
   bool vistapass = false;
   double _headerHeight = 150;
@@ -31,6 +34,31 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
       return {'validate': true};
     } on FirebaseAuthException catch (e) {
       return {'validate': false, 'code': e.code};
+    }
+  }
+
+  Future signInWithGoogle() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      return {'validate': true};
+    } catch (error) {
+      print(error);
+      return {'validate': false, 'code': error};
     }
   }
 
@@ -199,6 +227,46 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                                           color: Colors.white,
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold)),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 100,
+                                          child: RoundedLoadingButton(
+                                              color: Color.fromARGB(
+                                                  255, 44, 70, 212),
+                                              successColor: Color.fromARGB(
+                                                  255, 44, 70, 212),
+                                              controller: _btngoogle,
+                                              onPressed: () {
+                                                signInWithGoogle();
+                                              },
+                                              valueColor: Colors.white,
+                                              borderRadius: 12,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.login),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 6),
+                                                    child: Text(
+                                                      "Google",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  )
+                                                ],
+                                              )),
+                                        )
+                                      ]),
                                 ),
                                 const SizedBox(
                                   height: 35,

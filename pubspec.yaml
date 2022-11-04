@@ -45,6 +45,7 @@ dependencies:
   rounded_loading_button: ^2.1.0
   simple_shadow: ^0.3.0
   hexcolor: ^3.0.1
+  google_sign_in: ^5.4.2
 
 dev_dependencies:
   flutter_test:
