@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
             Text(user.uid.toString()),
             Text(user.phoneNumber.toString()),
             Text(user.emailVerified.toString()),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
             GestureDetector(

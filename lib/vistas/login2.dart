@@ -24,8 +24,11 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
       RoundedLoadingButtonController();
   final RoundedLoadingButtonController _btngoogle =
       RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btnquitar =
+      RoundedLoadingButtonController();
   bool editarfields = true;
   bool vistapass = false;
+  bool quitarcontainer = true;
   double _headerHeight = 150;
   Future loginfirebase() async {
     try {
@@ -56,9 +59,10 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       return {'validate': true};
+    } on FirebaseAuthException catch (e) {
+      return {'validate': false, 'code': e.code};
     } catch (error) {
-      print(error);
-      return {'validate': false, 'code': error};
+      return {'validate': false, 'code': 'google'};
     }
   }
 
@@ -68,6 +72,10 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
       mensagein = 'El correo electronico ingresado no se encuentra registrado.';
     } else if (code == 'wrong-password') {
       mensagein = 'La contrasña es incorrecta.';
+    } else if (code == 'network-request-failed') {
+      mensagein = 'No se tiene una conección a Internet.';
+    } else if (code == 'google') {
+      mensagein = 'Error en la sincronización con la cuenta Google.';
     }
     ElegantNotification.error(
       showProgressIndicator: true,
@@ -155,79 +163,83 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                                 const SizedBox(
                                   height: 30,
                                 ),
-                                TextFormField(
-                                  enabled: editarfields,
-                                  controller: correocontroller,
-                                  validator: (value) => EmailValidator.validate(
-                                          value!)
-                                      ? null
-                                      : "Debe ingresar un correo electrónico valido.",
-                                  decoration: ThemaField()
-                                      .FieldDecoration("Correo Electrónico"),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                TextFormField(
-                                  obscureText: !vistapass,
-                                  enabled: editarfields,
-                                  controller: passwordcontroller,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Debe ingresar una contraseña";
-                                    }
-                                    return null;
-                                  },
-                                  decoration: ThemaField().FieldPassDecoration(
-                                      "Contraseña",
-                                      IconButton(
-                                        onPressed: () {
+                                if (quitarcontainer)
+                                  Column(children: [
+                                    TextFormField(
+                                      enabled: editarfields,
+                                      controller: correocontroller,
+                                      validator: (value) => EmailValidator
+                                              .validate(value!)
+                                          ? null
+                                          : "Debe ingresar un correo electrónico valido.",
+                                      decoration: ThemaField().FieldDecoration(
+                                          "Correo Electrónico"),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    TextFormField(
+                                      obscureText: !vistapass,
+                                      enabled: editarfields,
+                                      controller: passwordcontroller,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Debe ingresar una contraseña";
+                                        }
+                                        return null;
+                                      },
+                                      decoration:
+                                          ThemaField().FieldPassDecoration(
+                                              "Contraseña",
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    vistapass = !vistapass;
+                                                  });
+                                                },
+                                                icon: Icon(vistapass
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off),
+                                              )),
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    RoundedLoadingButton(
+                                      color: Color.fromARGB(255, 44, 70, 212),
+                                      successColor:
+                                          Color.fromARGB(255, 44, 70, 212),
+                                      controller: _btnController1,
+                                      onPressed: () {
+                                        if (keyformulario.currentState!
+                                            .validate()) {
                                           setState(() {
-                                            vistapass = !vistapass;
+                                            editarfields = false;
                                           });
-                                        },
-                                        icon: Icon(vistapass
-                                            ? Icons.visibility
-                                            : Icons.visibility_off),
-                                      )),
-                                ),
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                RoundedLoadingButton(
-                                  color: Color.fromARGB(255, 44, 70, 212),
-                                  successColor:
-                                      Color.fromARGB(255, 44, 70, 212),
-                                  controller: _btnController1,
-                                  onPressed: () {
-                                    if (keyformulario.currentState!
-                                        .validate()) {
-                                      setState(() {
-                                        editarfields = false;
-                                      });
-                                      loginfirebase().then(
-                                        (value) {
-                                          if (!value['validate']) {
-                                            setState(() {
-                                              editarfields = true;
-                                            });
-                                            _btnController1.reset();
-                                            mostrarmensaje(value['code']);
-                                          }
-                                        },
-                                      );
-                                    } else {
-                                      _btnController1.reset();
-                                    }
-                                  },
-                                  valueColor: Colors.white,
-                                  borderRadius: 12,
-                                  child: const Text("Ingresar",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold)),
-                                ),
+                                          loginfirebase().then(
+                                            (value) {
+                                              if (!value['validate']) {
+                                                setState(() {
+                                                  editarfields = true;
+                                                });
+                                                _btnController1.reset();
+                                                mostrarmensaje(value['code']);
+                                              }
+                                            },
+                                          );
+                                        } else {
+                                          _btnController1.reset();
+                                        }
+                                      },
+                                      valueColor: Colors.white,
+                                      borderRadius: 12,
+                                      child: const Text("Ingresar",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                  ]),
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(top: 8, bottom: 8),
@@ -244,7 +256,21 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                                                   255, 44, 70, 212),
                                               controller: _btngoogle,
                                               onPressed: () {
-                                                signInWithGoogle();
+                                                setState(() {
+                                                  quitarcontainer = false;
+                                                });
+                                                signInWithGoogle().then(
+                                                  (value) {
+                                                    if (!value['validate']) {
+                                                      _btngoogle.reset();
+                                                      mostrarmensaje(
+                                                          value['code']);
+                                                      setState(() {
+                                                        quitarcontainer = true;
+                                                      });
+                                                    }
+                                                  },
+                                                );
                                               },
                                               valueColor: Colors.white,
                                               borderRadius: 12,
@@ -268,6 +294,37 @@ class _LoginPrincipalState extends State<LoginPrincipal> {
                                         )
                                       ]),
                                 ),
+                                const SizedBox(
+                                  height: 35,
+                                ),
+                                RoundedLoadingButton(
+                                    color: Color.fromARGB(255, 44, 70, 212),
+                                    successColor:
+                                        Color.fromARGB(255, 44, 70, 212),
+                                    controller: _btnquitar,
+                                    onPressed: () {
+                                      _btnquitar.reset();
+                                      setState(() {
+                                        quitarcontainer = !quitarcontainer;
+                                      });
+                                    },
+                                    valueColor: Colors.white,
+                                    borderRadius: 12,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.login),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 6),
+                                          child: Text(
+                                            "quitar",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      ],
+                                    )),
                                 const SizedBox(
                                   height: 35,
                                 ),
